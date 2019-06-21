@@ -9,3 +9,6 @@ docker build -t news_classify . && docker run --rm -it -p 5000:5000 news_classif
 ```
 
 Navigate to: [localhost:50000](http://localhost:5000)
+
+## Try Now
+http://173.249.24.227:5000
