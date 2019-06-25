@@ -1,3 +1,7 @@
+:root {
+    --theme-color: #dd1517;
+}
+
 body {
     background-color: #fff;
 }
@@ -69,4 +73,20 @@ textarea{
     border: solid 1px #7052CB;
     color: #7052CB;
     width: 50%
+}
+
+.github-corner {
+    border-bottom: 0;
+    position: fixed;
+    right: 0;
+    text-decoration: none;
+    top: 0;
+    z-index: 1;
+}
+
+.github-corner svg {
+    color: #fff;
+    fill: var(--theme-color, #42b983);
+    height: 80px;
+    width: 80px;
 }
