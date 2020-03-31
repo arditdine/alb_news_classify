@@ -17,7 +17,7 @@ app.mount('/static', StaticFiles(directory='app/static'))
 
 async def setup_learner():
     try:
-        learn = NewsClassify()
+        learn = NewsClassify(train=True)
         return learn
     except RuntimeError as e:
         print(e)
