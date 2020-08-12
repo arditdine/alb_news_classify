@@ -1,43 +1,26 @@
 #!/usr/bin/env python
-import sys
-import asyncio
-import uvicorn
-from starlette.applications import Starlette
-from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import HTMLResponse, JSONResponse
-from starlette.staticfiles import StaticFiles
-from pathlib import Path
+from flask import Flask, request, jsonify, render_template
 from news_classify import NewsClassify
 
-path = Path(__file__).parent
+model = None
+app = Flask(__name__, template_folder='templates')
 
-app = Starlette()
-app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])
-app.mount('/static', StaticFiles(directory='app/static'))
+def load_model():
+    global model
+    model = NewsClassify(train=True)
 
-async def setup_learner():
-    try:
-        learn = NewsClassify(train=True)
-        return learn
-    except RuntimeError as e:
-        print(e)
-
-loop = asyncio.get_event_loop()
-tasks = [asyncio.ensure_future(setup_learner())]
-learn = loop.run_until_complete(asyncio.gather(*tasks))[0]
-loop.close()
-
-@app.route('/')
-async def homepage(request):
-    html_file = path / 'view' / 'index.html'
-    return HTMLResponse(html_file.open().read())
+@app.route('/', methods=['GET'])
+def home_endpoint():
+    return render_template("index.html")
 
 @app.route('/analyze', methods=['POST'])
-async def analyze(request):
-    form_data = await request.form()
-    prediction = learn.classify(form_data['article'])
-    return JSONResponse({'result': str(prediction)})
+def analyze():
+    if request.method == 'POST':
+        prediction = model.classify(request.form.get('article'))
+        return jsonify({'result': str(prediction)})
+
+    return 'Hello Analyzer'
 
 if __name__ == '__main__':
-    if 'serve' in sys.argv:
-        uvicorn.run(app=app, host='0.0.0.0', port=5000, log_level="info")
+    load_model() # load model at the beginning once only
+    app.run(host='0.0.0.0', port=5000)
