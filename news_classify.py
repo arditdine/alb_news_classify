@@ -42,7 +42,7 @@ class NewsClassify(object):
     def bag_of_words(self, categories):
         count_vect = CountVectorizer()
         X_train_counts = count_vect.fit_transform(self.fetch_train_dataset(categories).data)
-        pickle.dump(count_vect.vocabulary_, open(self.vocab_path, 'wb'))
+        # pickle.dump(count_vect.vocabulary_, open(self.vocab_path, 'wb'))
         return X_train_counts
         
     def tf_idf(self, categories):
