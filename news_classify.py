@@ -17,7 +17,8 @@ class NewsClassify(object):
     model_path = os.path.join(root_path, "models/model.pickle")
 
     def __init__(self, train=False, categories=None):
-        if(train):
+        self.train = train
+        if(self.train):
             print("Starting Train")
             model = self.model(self.categories)
             pickle.dump(model, open(self.model_path, 'wb'))
@@ -26,7 +27,7 @@ class NewsClassify(object):
         if(categories):
             self.categories = categories
 
-        print("Loading pre-trained model")
+        print("Loading model")
         vocabulary_to_load = pickle.load(open(self.vocab_path, 'rb'), encoding='latin1')
         self.count_vect = CountVectorizer(vocabulary=vocabulary_to_load)
         self.load_model = pickle.load(open(self.model_path, 'rb'))
@@ -42,7 +43,8 @@ class NewsClassify(object):
     def bag_of_words(self, categories):
         count_vect = CountVectorizer()
         X_train_counts = count_vect.fit_transform(self.fetch_train_dataset(categories).data)
-        # pickle.dump(count_vect.vocabulary_, open(self.vocab_path, 'wb'))
+        if(self.train):
+            pickle.dump(count_vect.vocabulary_, open(self.vocab_path, 'wb'))
         return X_train_counts
         
     def tf_idf(self, categories):
