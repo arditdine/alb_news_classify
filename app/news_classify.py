@@ -13,11 +13,12 @@ class NewsClassify(object):
 
     categories = None
     root_path = os.path.dirname(os.path.realpath(__file__))
-    vocab_path = os.path.join(root_path, "models/vocab.pickle")
-    model_path = os.path.join(root_path, "models/model.pickle")
+    vocab_path = os.path.join(root_path, "datasets/models/vocab.pickle")
+    model_path = os.path.join(root_path, "datasets/models/model.pickle")
 
     def __init__(self, train=False, categories=None):
-        if(train):
+        self.train = train
+        if(self.train):
             print("Starting Train")
             model = self.model(self.categories)
             pickle.dump(model, open(self.model_path, 'wb'))
@@ -35,14 +36,15 @@ class NewsClassify(object):
         self.tfidf_transformer = self.tf_idf(self.categories)[0]
 
     def fetch_train_dataset(self, categories):
-        data_path = os.path.join(self.root_path, "news")
+        data_path = os.path.join(self.root_path, "datasets/news")
         data_stream = sklearn.datasets.load_files(data_path, description=None, categories=categories,load_content=True, shuffle=True,encoding='utf-8',decode_error='strict', random_state=42)
         return data_stream
         
     def bag_of_words(self, categories):
         count_vect = CountVectorizer()
         X_train_counts = count_vect.fit_transform(self.fetch_train_dataset(categories).data)
-        pickle.dump(count_vect.vocabulary_, open(self.vocab_path, 'wb'))
+        if(self.train):
+            pickle.dump(count_vect.vocabulary_, open(self.vocab_path, 'wb'))
         return X_train_counts
         
     def tf_idf(self, categories):
